@@ -8,7 +8,7 @@ import (
 )
 
 var hitbtcPairs utils.PairList
-var pageTemplate = template.Must(template.ParseFiles("gretchen/web/main.html"))
+var pageTemplate = template.Must(template.ParseFiles("templates/index.html"))
 
 var handler = func(w http.ResponseWriter, r *http.Request) {
 	data := TodoPageData{
