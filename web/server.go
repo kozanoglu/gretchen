@@ -8,18 +8,18 @@ import (
 	"os"
 )
 
-var hitbtcPairs utils.PairList
+var hitbtcPairs utils.TickerList
 var pageTemplate = template.Must(template.ParseFiles("templates/index.html"))
 
 var handler = func(w http.ResponseWriter, r *http.Request) {
-	data := TodoPageData{
+	data := PageData{
 		PageTitle: "HitBTC Results",
-		Pairs:     hitbtcPairs,
+		Tickers:   hitbtcPairs,
 	}
 	pageTemplate.Execute(w, data)
 }
 
-func Start(hitbtcChannel chan utils.PairList) {
+func Start(hitbtcChannel chan utils.TickerList) {
 
 	port := os.Getenv("PORT")
 
@@ -38,12 +38,7 @@ func Start(hitbtcChannel chan utils.PairList) {
 	}
 }
 
-type Todo struct {
-	Title string
-	Done  bool
-}
-
-type TodoPageData struct {
+type PageData struct {
 	PageTitle string
-	Pairs     utils.PairList
+	Tickers   utils.TickerList
 }

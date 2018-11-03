@@ -2,12 +2,16 @@
 <table>
     <tr>
         <td>Symbol</td>
+        <td>Price</td>
+        <td>Volume</td>
         <td>RSI</td>
     </tr>
-    {{range .Pairs}}
+    {{range .Tickers}}
     <tr>
-       <td>{{.Key}}</td>
-       <td>{{.Value}}</td>
+       <td>{{.Symbol}}</td>
+       <td>{{.Volume}}</td>
+       <td>{{.Price}}</td>
+       <td>{{.Rsi}}</td>
     </tr>
     {{end}}
 </table>>

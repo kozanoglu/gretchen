@@ -17,7 +17,7 @@ func main() {
 	//go idex.Loop(5)
 	//go binance.Loop(5)
 
-	hitbtcResults := make(chan utils.PairList)
+	hitbtcResults := make(chan utils.TickerList)
 	go hitbtc.Loop(60, hitbtcResults)
 
 	go web.Start(hitbtcResults)

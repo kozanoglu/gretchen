@@ -5,12 +5,12 @@ import (
 	"sort"
 )
 
-func SortMapByValues(inputMap map[string]float64) PairList {
-	p := make(PairList, len(inputMap))
+func SortMapByValues(inputMap map[string]Ticker) TickerList {
+	p := make(TickerList, len(inputMap))
 
 	i := 0
-	for k, v := range inputMap {
-		p[i] = Pair{k, v}
+	for _, v := range inputMap {
+		p[i] = v
 		i++
 	}
 
@@ -24,11 +24,18 @@ func SortMapByValues(inputMap map[string]float64) PairList {
 	return p
 }
 
-func PrintPairList(list PairList) {
+func PrintTickerList(list TickerList) {
 
 	for _, p := range list {
-		fmt.Println(p.Key, ": ", p.Value)
+		fmt.Println(p)
 	}
+}
+
+type Ticker struct {
+	Symbol string
+	Price  string
+	Volume string
+	Rsi    float64
 }
 
 type Pair struct {
@@ -36,8 +43,8 @@ type Pair struct {
 	Value float64
 }
 
-type PairList []Pair
+type TickerList []Ticker
 
-func (p PairList) Len() int           { return len(p) }
-func (p PairList) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
-func (p PairList) Less(i, j int) bool { return p[i].Value < p[j].Value }
+func (p TickerList) Len() int           { return len(p) }
+func (p TickerList) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
+func (p TickerList) Less(i, j int) bool { return p[i].Rsi < p[j].Rsi }
