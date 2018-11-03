@@ -5,6 +5,7 @@ import (
 	"gretchen/hitbtc"
 	"gretchen/utils"
 	"gretchen/web"
+	"time"
 )
 
 const SleepInterval = 5 * 1000000000
@@ -26,8 +27,12 @@ func main() {
 		res := <-hitbtcResults
 		utils.PrintPairList(res)*/
 
+	for {
+		time.Sleep(10 * time.Second)
+	}
+
 	fmt.Scanln()
-	fmt.Println("Exit")
+	fmt.Println("Exiting the application")
 }
 
 /*
