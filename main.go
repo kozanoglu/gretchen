@@ -9,8 +9,6 @@ import (
 	"time"
 )
 
-const SleepInterval = 5 * 1000000000
-
 func main() {
 
 	log.Println("Starting the application...")
@@ -20,7 +18,7 @@ func main() {
 	//go binance.Loop(5)
 
 	hitbtcResults := make(chan utils.PairList)
-	go hitbtc.Loop(10, hitbtcResults)
+	go hitbtc.Loop(60, hitbtcResults)
 
 	go web.Start(hitbtcResults)
 
