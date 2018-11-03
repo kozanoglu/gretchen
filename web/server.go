@@ -1,10 +1,11 @@
 package web
 
 import (
-	"fmt"
 	"gretchen/utils"
 	"html/template"
+	"log"
 	"net/http"
+	"os"
 )
 
 var hitbtcPairs utils.PairList
@@ -20,10 +21,17 @@ var handler = func(w http.ResponseWriter, r *http.Request) {
 
 func Start(hitbtcChannel chan utils.PairList) {
 
+	port := os.Getenv("PORT")
+
+	if port == "" {
+		log.Println("$PORT not set, using default 8000")
+		port = "8000"
+	}
+
 	http.HandleFunc("/", handler)
 
-	go http.ListenAndServe(":80", nil)
-	fmt.Println("Started the web server on port 80")
+	go http.ListenAndServe(":"+port, nil)
+	log.Println("Started the web server on port 8000")
 
 	for {
 		hitbtcPairs = <-hitbtcChannel
