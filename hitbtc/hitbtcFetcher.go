@@ -11,23 +11,23 @@ import (
 
 func Loop(period time.Duration, results chan<- utils.TickerList) {
 	for {
-		tickers := Get24HTickers()
+		hitbtcTickers := Get24HTickers()
 		var rsiMap map[string]utils.Ticker
 		rsiMap = make(map[string]utils.Ticker)
 
-		for _, ticker := range tickers {
-			if strings.HasSuffix(ticker.Symbol, "BTC") {
-				klines := getCandlesForSymbol(ticker.Symbol)
+		for _, hitbtcTicker := range hitbtcTickers {
+			if strings.HasSuffix(hitbtcTicker.Symbol, "BTC") {
+				klines := getCandlesForSymbol(hitbtcTicker.Symbol)
 				if len(klines) > 14 {
 					rsi := talib.Rsi(getCloseValues(klines), 14)
 
-					var unifiedTicker utils.Ticker
-					unifiedTicker.Symbol = ticker.Symbol
-					unifiedTicker.Rsi = rsi[len(rsi)-1]
-					unifiedTicker.Price = ticker.Last
-					unifiedTicker.Volume = ticker.Volume
+					var ticker utils.Ticker
+					ticker.Symbol = hitbtcTicker.Symbol
+					ticker.Rsi = rsi[len(rsi)-1]
+					ticker.Price = hitbtcTicker.Last
+					ticker.Volume = hitbtcTicker.Volume
 
-					rsiMap[ticker.Symbol] = unifiedTicker
+					rsiMap[ticker.Symbol] = ticker
 				}
 				//fmt.Println("1H RSI for", ticker.Symbol, " is: ", rsi[len(rsi)-1])
 			}
