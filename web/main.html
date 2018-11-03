@@ -1,0 +1,13 @@
+<h1>{{.PageTitle}}<h1>
+<table>
+    <tr>
+        <td>Symbol</td>
+        <td>RSI</td>
+    </tr>
+    {{range .Pairs}}
+    <tr>
+       <td>{{.Key}}</td>
+       <td>{{.Value}}</td>
+    </tr>
+    {{end}}
+</table>>
