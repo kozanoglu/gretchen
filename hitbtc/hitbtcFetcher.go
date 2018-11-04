@@ -12,8 +12,8 @@ import (
 func Loop(period time.Duration, results chan<- utils.TickerList) {
 	for {
 		hitbtcTickers := Get24HTickers()
-		var rsiMap map[string]utils.Ticker
-		rsiMap = make(map[string]utils.Ticker)
+		var tickerMap map[string]utils.Ticker
+		tickerMap = make(map[string]utils.Ticker)
 
 		for _, hitbtcTicker := range hitbtcTickers {
 			if strings.HasSuffix(hitbtcTicker.Symbol, "BTC") {
@@ -27,7 +27,7 @@ func Loop(period time.Duration, results chan<- utils.TickerList) {
 					ticker.Price = hitbtcTicker.Last
 					ticker.Volume = hitbtcTicker.Volume
 
-					rsiMap[ticker.Symbol] = ticker
+					tickerMap[ticker.Symbol] = ticker
 				}
 				//fmt.Println("1H RSI for", ticker.Symbol, " is: ", rsi[len(rsi)-1])
 			}
@@ -35,7 +35,7 @@ func Loop(period time.Duration, results chan<- utils.TickerList) {
 		log.Println("HitBTC result are fetched")
 
 		//	utils.PrintPairList(utils.SortMapByValues(rsiMap))
-		results <- (utils.SortMapByValues(rsiMap))
+		results <- (utils.SortTickerMapByRSIValues(tickerMap))
 
 		time.Sleep(period * time.Second)
 	}

@@ -1,6 +1,7 @@
 package web
 
 import (
+	"fmt"
 	"gretchen/utils"
 	"html/template"
 	"log"
@@ -8,18 +9,24 @@ import (
 	"os"
 )
 
+var binancePairs utils.TickerList
 var hitbtcPairs utils.TickerList
-var pageTemplate = template.Must(template.ParseFiles("templates/index.html"))
+
+var funcMap = template.FuncMap{
+	"FormatFloat": func(f float64) string { return fmt.Sprintf("%.2f", f) },
+}
 
 var handler = func(w http.ResponseWriter, r *http.Request) {
 	data := PageData{
-		PageTitle: "HitBTC Results",
-		Tickers:   hitbtcPairs,
+		HitBtcTickers:  hitbtcPairs,
+		BinanceTickers: binancePairs,
 	}
-	pageTemplate.Execute(w, data)
+	pageTemplate.ExecuteTemplate(w, "index.html", data)
 }
 
-func Start(hitbtcChannel chan utils.TickerList) {
+var pageTemplate = template.Must(template.New("main").Funcs(funcMap).ParseGlob("templates/*.html"))
+
+func Start(binanceChannel chan utils.TickerList, hitbtcChannel chan utils.TickerList) {
 
 	port := os.Getenv("PORT")
 
@@ -31,14 +38,15 @@ func Start(hitbtcChannel chan utils.TickerList) {
 	http.HandleFunc("/", handler)
 
 	go http.ListenAndServe(":"+port, nil)
-	log.Println("Started the web server on port 8000")
+	log.Println("Started the web server on port ", port)
 
 	for {
 		hitbtcPairs = <-hitbtcChannel
+		binancePairs = <-binanceChannel
 	}
 }
 
 type PageData struct {
-	PageTitle string
-	Tickers   utils.TickerList
+	HitBtcTickers  utils.TickerList
+	BinanceTickers utils.TickerList
 }

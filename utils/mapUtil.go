@@ -5,7 +5,7 @@ import (
 	"sort"
 )
 
-func SortMapByValues(inputMap map[string]Ticker) TickerList {
+func SortTickerMapByRSIValues(inputMap map[string]Ticker) TickerList {
 	p := make(TickerList, len(inputMap))
 
 	i := 0
@@ -36,11 +36,6 @@ type Ticker struct {
 	Price  string
 	Volume string
 	Rsi    float64
-}
-
-type Pair struct {
-	Key   string
-	Value float64
 }
 
 type TickerList []Ticker

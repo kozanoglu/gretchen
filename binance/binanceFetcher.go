@@ -1,31 +1,38 @@
 package binance
 
 import (
-	"fmt"
 	"gretchen/utils"
+	"log"
+	"strconv"
 	"strings"
 	"time"
 
 	talib "github.com/markcheno/go-talib"
 )
 
-func Loop(period time.Duration) {
+func Loop(period time.Duration, results chan<- utils.TickerList) {
 	for {
 		tickers := Get24HTickers()
-		var rsiMap map[string]float64
-		rsiMap = make(map[string]float64)
+		var tickerMap map[string]utils.Ticker
+		tickerMap = make(map[string]utils.Ticker)
 
-		for _, ticker := range tickers {
-			if strings.HasSuffix(ticker.Symbol, "ETH") {
-				klines := getCandlesForSymbol(ticker.Symbol)
+		for _, binanceTicker := range tickers {
+			if strings.HasSuffix(binanceTicker.Symbol, "BTC") {
+				klines := getCandlesForSymbol(binanceTicker.Symbol)
 				rsi := talib.Rsi(getCloseValues(klines), 14)
-				rsiMap[ticker.Symbol] = rsi[len(rsi)-1]
-				//fmt.Println("1H RSI for", ticker.Symbol, " is: ", rsi[len(rsi)-1])
+
+				var ticker utils.Ticker
+				ticker.Symbol = binanceTicker.Symbol
+				ticker.Rsi = rsi[len(rsi)-1]
+				ticker.Price = strconv.FormatFloat(binanceTicker.LastPrice, 'f', -1, 64)
+				ticker.Volume = strconv.FormatFloat(binanceTicker.Volume, 'f', -1, 64)
+
+				tickerMap[ticker.Symbol] = ticker
 			}
 		}
 
-		utils.PrintPairList(utils.SortMapByValues(rsiMap))
-		fmt.Println("*********")
+		log.Println("Binance result are fetched")
+		results <- (utils.SortTickerMapByRSIValues(tickerMap))
 
 		time.Sleep(period * time.Second)
 	}

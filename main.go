@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"gretchen/binance"
 	"gretchen/hitbtc"
 	"gretchen/utils"
 	"gretchen/web"
@@ -15,12 +16,13 @@ func main() {
 
 	log.Println("Main loop thread started...")
 	//go idex.Loop(5)
-	//go binance.Loop(5)
 
+	binanceResults := make(chan utils.TickerList)
 	hitbtcResults := make(chan utils.TickerList)
-	go hitbtc.Loop(60, hitbtcResults)
 
-	go web.Start(hitbtcResults)
+	go binance.Loop(60, binanceResults)
+	go hitbtc.Loop(60, hitbtcResults)
+	go web.Start(binanceResults, hitbtcResults)
 
 	for {
 		time.Sleep(10 * time.Second)
