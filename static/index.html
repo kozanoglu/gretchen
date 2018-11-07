@@ -1,0 +1,57 @@
+<head>
+    <link rel="stylesheet" type="text/css" href="static/index.css">
+    <script src="static/index.js"></script>
+</head>
+
+<body onload="document.getElementById('defaultOpen').click();">
+
+    <!-- Tab links -->
+    <div class="tab">
+        <button class="tablinks" onclick="selectTab(event, 'Binance')" id="defaultOpen">Binance</button>
+        <button class="tablinks" onclick="selectTab(event, 'HitBTC')">HitBTC</button>
+    </div>
+
+    <!-- Tab content -->
+    <div id="Binance" class="tabcontent">
+        <div>
+            <table>
+                <tr>
+                    <td>Symbol</td>
+                    <td>Price</td>
+                    <td>Volume</td>
+                    <td>1H RSI</td>
+                </tr>
+                {{range .BinanceTickers}}
+                <tr>
+                    <td>{{.Symbol}}</td>
+                    <td>{{.Price}}</td>
+                    <td>{{.Volume}}</td>
+                    <td>{{FormatFloat .Rsi}}</td>
+                </tr>
+                {{end}}
+            </table>
+        </div>
+    </div>
+
+    <div id="HitBTC" class="tabcontent">
+        <table>
+            <tr>
+                <td>Symbol</td>
+                <td>Price</td>
+                <td>Volume</td>
+                <td>1H RSI</td>
+            </tr>
+            {{range .HitBtcTickers}}
+            <tr>
+                <td>{{.Symbol}}</td>
+                <td>{{.Price}}</td>
+                <td>{{.Volume}}</td>
+                <td>{{FormatFloat .Rsi}}</td>
+            </tr>
+            {{end}}
+        </table>
+    </div>
+
+
+
+</body>

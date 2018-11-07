@@ -24,7 +24,7 @@ var handler = func(w http.ResponseWriter, r *http.Request) {
 	pageTemplate.ExecuteTemplate(w, "index.html", data)
 }
 
-var pageTemplate = template.Must(template.New("main").Funcs(funcMap).ParseGlob("templates/*.html"))
+var pageTemplate = template.Must(template.New("main").Funcs(funcMap).ParseGlob("static/*.html"))
 
 func Start(binanceChannel chan utils.TickerList, hitbtcChannel chan utils.TickerList) {
 
@@ -36,6 +36,7 @@ func Start(binanceChannel chan utils.TickerList, hitbtcChannel chan utils.Ticker
 	}
 
 	http.HandleFunc("/", handler)
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
 	go http.ListenAndServe(":"+port, nil)
 	log.Println("Started the web server on port ", port)
