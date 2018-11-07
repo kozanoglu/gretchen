@@ -24,7 +24,7 @@ var funcMap = template.FuncMap{
 		arr = strings.TrimSuffix(arr, ",") + "]"
 		result := "showChart(" + arr + ")"
 		return template.JS(result)
-	}
+	},
 }
 
 var handler = func(w http.ResponseWriter, r *http.Request) {
