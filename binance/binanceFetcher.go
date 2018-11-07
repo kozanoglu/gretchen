@@ -19,11 +19,11 @@ func Loop(period time.Duration, results chan<- utils.TickerList) {
 		for _, binanceTicker := range tickers {
 			if strings.HasSuffix(binanceTicker.Symbol, "BTC") {
 				klines := getCandlesForSymbol(binanceTicker.Symbol)
-				rsi := talib.Rsi(getCloseValues(klines), 14)
+				rsiArray := talib.Rsi(getCloseValues(klines), 14)
 
 				var ticker utils.Ticker
 				ticker.Symbol = binanceTicker.Symbol
-				ticker.Rsi = rsi[len(rsi)-1]
+				ticker.Rsi = rsiArray[(len(rsiArray) - utils.Min(len(rsiArray), 7)):]
 				ticker.Price = strconv.FormatFloat(binanceTicker.LastPrice, 'f', -1, 64)
 				ticker.Volume = strconv.FormatFloat(binanceTicker.Volume, 'f', -1, 64)
 

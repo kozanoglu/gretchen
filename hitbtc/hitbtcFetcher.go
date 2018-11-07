@@ -19,22 +19,19 @@ func Loop(period time.Duration, results chan<- utils.TickerList) {
 			if strings.HasSuffix(hitbtcTicker.Symbol, "BTC") {
 				klines := getCandlesForSymbol(hitbtcTicker.Symbol)
 				if len(klines) > 14 {
-					rsi := talib.Rsi(getCloseValues(klines), 14)
+					rsiArray := talib.Rsi(getCloseValues(klines), 14)
 
 					var ticker utils.Ticker
 					ticker.Symbol = hitbtcTicker.Symbol
-					ticker.Rsi = rsi[len(rsi)-1]
+					ticker.Rsi = rsiArray[(len(rsiArray) - utils.Min(len(rsiArray), 7)):] // last N elements
 					ticker.Price = hitbtcTicker.Last
 					ticker.Volume = hitbtcTicker.Volume
 
 					tickerMap[ticker.Symbol] = ticker
 				}
-				//fmt.Println("1H RSI for", ticker.Symbol, " is: ", rsi[len(rsi)-1])
 			}
 		}
 		log.Println("HitBTC result are fetched")
-
-		//	utils.PrintPairList(utils.SortMapByValues(rsiMap))
 		results <- (utils.SortTickerMapByRSIValues(tickerMap))
 
 		time.Sleep(period * time.Second)

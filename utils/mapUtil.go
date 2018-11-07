@@ -35,11 +35,11 @@ type Ticker struct {
 	Symbol string
 	Price  string
 	Volume string
-	Rsi    float64
+	Rsi    []float64
 }
 
 type TickerList []Ticker
 
 func (p TickerList) Len() int           { return len(p) }
 func (p TickerList) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
-func (p TickerList) Less(i, j int) bool { return p[i].Rsi < p[j].Rsi }
+func (p TickerList) Less(i, j int) bool { return p[i].Rsi[len(p[i].Rsi)-1] < p[j].Rsi[len(p[j].Rsi)-1] }

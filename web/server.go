@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 )
 
 var binancePairs utils.TickerList
@@ -14,6 +15,16 @@ var hitbtcPairs utils.TickerList
 
 var funcMap = template.FuncMap{
 	"FormatFloat": func(f float64) string { return fmt.Sprintf("%.2f", f) },
+	"LastElem":    func(f []float64) string { return fmt.Sprintf("%.2f", f[len(f)-1]) },
+	"ToJsArrayFunction": func(f []float64) template.JS {
+		arr := "["
+		for _, v := range f {
+			arr += fmt.Sprintf("%.2f", v) + ","
+		}
+		arr = strings.TrimSuffix(arr, ",") + "]"
+		result := "showChart(" + arr + ")"
+		return template.JS(result)
+	}
 }
 
 var handler = func(w http.ResponseWriter, r *http.Request) {

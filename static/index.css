@@ -33,3 +33,9 @@
     border: 1px solid #ccc;
     border-top: none;
 }
+
+#myChart {
+    display: none;
+}
+
+.clickable { cursor: pointer; }
