@@ -4,7 +4,6 @@ import (
 	"gretchen/utils"
 	"log"
 	"strconv"
-	"strings"
 	"time"
 
 	talib "github.com/markcheno/go-talib"
@@ -17,19 +16,19 @@ func Loop(period time.Duration, results chan<- utils.TickerList) {
 		tickerMap = make(map[string]utils.Ticker)
 
 		for _, binanceTicker := range tickers {
-			if strings.HasSuffix(binanceTicker.Symbol, "BTC") {
-				klines := getCandlesForSymbol(binanceTicker.Symbol)
-				rsiArray := talib.Rsi(getCloseValues(klines), 14)
+			//	if strings.HasSuffix(binanceTicker.Symbol, "BTC") {
+			klines := getCandlesForSymbol(binanceTicker.Symbol)
+			rsiArray := talib.Rsi(getCloseValues(klines), 14)
 
-				var ticker utils.Ticker
-				ticker.Symbol = binanceTicker.Symbol
-				ticker.Rsi = rsiArray[(len(rsiArray) - utils.Min(len(rsiArray), 7)):]
-				ticker.Price = strconv.FormatFloat(binanceTicker.LastPrice, 'f', -1, 64)
-				ticker.Volume = strconv.FormatFloat(binanceTicker.Volume, 'f', -1, 64)
+			var ticker utils.Ticker
+			ticker.Symbol = binanceTicker.Symbol
+			ticker.Rsi = rsiArray[(len(rsiArray) - utils.Min(len(rsiArray), 7)):] // last N elements
+			ticker.Price = strconv.FormatFloat(binanceTicker.LastPrice, 'f', -1, 64)
+			ticker.Volume = strconv.FormatFloat(binanceTicker.Volume, 'f', -1, 64)
 
-				tickerMap[ticker.Symbol] = ticker
-			}
+			tickerMap[ticker.Symbol] = ticker
 		}
+		//	}
 
 		log.Println("Binance result are fetched")
 		results <- (utils.SortTickerMapByRSIValues(tickerMap))
