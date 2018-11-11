@@ -35,6 +35,7 @@ type Ticker struct {
 	Symbol         string
 	Price          string
 	Volume         string
+	QuoteVolume    string
 	Rsi            []float64
 	QuoteCurrency  string
 	PriceChange1H  float64

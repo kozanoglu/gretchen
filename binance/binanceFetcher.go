@@ -30,6 +30,7 @@ func Loop(period time.Duration, results chan<- utils.TickerList) {
 			ticker.Rsi = rsiArray[(len(rsiArray) - utils.Min(len(rsiArray), 7)):] // last N elements
 			ticker.Price = strconv.FormatFloat(binanceTicker.LastPrice, 'f', -1, 64)
 			ticker.Volume = strconv.FormatFloat(binanceTicker.Volume, 'f', -1, 64)
+			ticker.QuoteVolume = strconv.FormatFloat(binanceTicker.QuoteVolume, 'f', -1, 64)
 			ticker.QuoteCurrency = symbolsMap[binanceTicker.Symbol].QuoteAsset
 			ticker.PriceChange1H = utils.PercentageDiff(binanceTicker.LastPrice, klines[len(klines)-2].Close)
 			if len(klines) >= 5 {

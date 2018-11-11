@@ -27,6 +27,7 @@
                     <td>Symbol</td>
                     <td>Price</td>
                     <td>Volume</td>
+                    <td>Quote Volume</td>
                     <td>1H RSI</td>
                     <td>1H Price Change</td>
                     <td>4H Price Change</td>
@@ -37,6 +38,7 @@
                     <td>{{.Symbol}}</td>
                     <td>{{.Price}}</td>
                     <td>{{.Volume}}</td>
+                    <td>{{.QuoteVolume}}</td>
                     <td class="clickable" onclick="{{ ToJsArrayFunction .Rsi}}">{{ LastElem .Rsi}}</td>
                     <td>{{.PriceChange1H}}%</td>
                     <td>{{.PriceChange4H}}%</td>
@@ -53,6 +55,7 @@
                 <td>Symbol</td>
                 <td>Price</td>
                 <td>Volume</td>
+                <td>Quote Volume</td>
                 <td>1H RSI</td>
                 <td>1H Price Change</td>
                 <td>4H Price Change</td>
@@ -63,6 +66,7 @@
                 <td>{{.Symbol}}</td>
                 <td>{{.Price}}</td>
                 <td>{{.Volume}}</td>
+                <td>{{.QuoteVolume}}</td>
                 <td class="clickable" onclick="{{ ToJsArrayFunction .Rsi}}">{{ LastElem .Rsi}}</td>
                 <td>{{.PriceChange1H}}%</td>
                 <td>{{.PriceChange4H}}%</td>
