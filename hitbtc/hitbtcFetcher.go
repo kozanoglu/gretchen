@@ -27,6 +27,7 @@ func Loop(period time.Duration, results chan<- utils.TickerList) {
 				ticker.Rsi = rsiArray[(len(rsiArray) - utils.Min(len(rsiArray), 7)):] // last N elements
 				ticker.Price = hitbtcTicker.Last
 				ticker.Volume = hitbtcTicker.Volume
+				ticker.QuoteVolume = hitbtcTicker.VolumeQuote
 				ticker.QuoteCurrency = symbolsMap[hitbtcTicker.Symbol].QuoteCurrency
 
 				lastPrice, err := strconv.ParseFloat(hitbtcTicker.Last, 64)
