@@ -7,8 +7,15 @@ import (
 )
 
 const HitBTCEndpoint = "https://api.hitbtc.com"
+const SymbolsAPI = "/api/2/public/symbol"
 const DailyTickerAPI = "/api/2/public/ticker"
 const KlinesAPI = "/api/2/public/candles/"
+
+func GetSymbols() map[string]HitBTCSymbol {
+	url := HitBTCEndpoint + SymbolsAPI
+	body := utils.Get(url)
+	return parseSymbolInfo(body)
+}
 
 func Get24HTickers() []HitBTCTicker {
 	url := HitBTCEndpoint + DailyTickerAPI
@@ -22,6 +29,22 @@ func GetCandles(symbol string) []HitBTCCandle {
 
 	//fmt.Println(string(body))
 	return parseKlinesInfo(body)
+}
+
+func parseSymbolInfo(input []byte) map[string]HitBTCSymbol {
+	var result []HitBTCSymbol
+	err := json.Unmarshal(input, &result)
+
+	if err != nil {
+		panic(err)
+	}
+
+	resultAsMap := make(map[string]HitBTCSymbol)
+	for i := 0; i < len(result); i++ {
+		resultAsMap[result[i].ID] = result[i]
+	}
+
+	return resultAsMap
 }
 
 func parseTickerInfo(input []byte) []HitBTCTicker {
@@ -44,6 +67,17 @@ func parseKlinesInfo(input []byte) []HitBTCCandle {
 	}
 
 	return result
+}
+
+type HitBTCSymbol struct {
+	ID                   string `json:"id"`
+	BaseCurrency         string `json:"baseCurrency"`
+	QuoteCurrency        string `json:"quoteCurrency"`
+	QuantityIncrement    string `json:"quantityIncrement"`
+	TickSize             string `json:"tickSize"`
+	TakeLiquidityRate    string `json:"takeLiquidityRate"`
+	ProvideLiquidityRate string `json:"provideLiquidityRate"`
+	FeeCurrency          string `json:"feeCurrency"`
 }
 
 type HitBTCTicker struct {

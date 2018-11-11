@@ -28,6 +28,9 @@
                     <td>Price</td>
                     <td>Volume</td>
                     <td>1H RSI</td>
+                    <td>1H Price Change</td>
+                    <td>4H Price Change</td>
+                    <td>24H Price Change</td>
                 </tr>
                 {{range .BinanceTickers}}
                 <tr>
@@ -35,6 +38,9 @@
                     <td>{{.Price}}</td>
                     <td>{{.Volume}}</td>
                     <td class="clickable" onclick="{{ ToJsArrayFunction .Rsi}}">{{ LastElem .Rsi}}</td>
+                    <td>{{.PriceChange1H}}%</td>
+                    <td>{{.PriceChange4H}}%</td>
+                    <td>{{.PriceChange24H}}%</td>
                 </tr>
                 {{end}}
             </table>
@@ -48,6 +54,9 @@
                 <td>Price</td>
                 <td>Volume</td>
                 <td>1H RSI</td>
+                <td>1H Price Change</td>
+                <td>4H Price Change</td>
+                <td>24H Price Change</td>
             </tr>
             {{range .HitBtcTickers}}
             <tr>
@@ -55,6 +64,9 @@
                 <td>{{.Price}}</td>
                 <td>{{.Volume}}</td>
                 <td class="clickable" onclick="{{ ToJsArrayFunction .Rsi}}">{{ LastElem .Rsi}}</td>
+                <td>{{.PriceChange1H}}%</td>
+                <td>{{.PriceChange4H}}%</td>
+                <td>{{.PriceChange24H}}%</td>
             </tr>
             {{end}}
         </table>

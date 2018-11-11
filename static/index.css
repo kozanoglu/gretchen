@@ -30,8 +30,17 @@
 .tabcontent {
     display: none;
     padding: 6px 12px;
-    border: 1px solid #ccc;
     border-top: none;
+    border-collapse: collapse;
+}
+.tabcontent tr {
+    border: none; 
+}
+
+.tabcontent td {
+    padding-left: 5px;
+    padding-right: 5px;
+    border-right: 1px solid grey;
 }
 
 #myChart {

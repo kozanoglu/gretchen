@@ -32,10 +32,14 @@ func PrintTickerList(list TickerList) {
 }
 
 type Ticker struct {
-	Symbol string
-	Price  string
-	Volume string
-	Rsi    []float64
+	Symbol         string
+	Price          string
+	Volume         string
+	Rsi            []float64
+	QuoteCurrency  string
+	PriceChange1H  float64
+	PriceChange4H  float64
+	PriceChange24H float64
 }
 
 type TickerList []Ticker
