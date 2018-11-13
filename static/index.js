@@ -1,3 +1,5 @@
+var activeTable;
+
 function selectTab(evt, tabId) {
     // Declare all variables
     var i, tabcontent, tablinks;
@@ -16,6 +18,7 @@ function selectTab(evt, tabId) {
 
     // Show the current tab, and add an "active" class to the button that opened the tab
     $("#" + tabId).show();
+    activeTable = tabId + "_table";
     evt.currentTarget.className += " active";
 }
 

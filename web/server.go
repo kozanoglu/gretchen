@@ -8,10 +8,12 @@ import (
 	"net/http"
 	"os"
 	"strings"
+
+	"github.com/gin-gonic/gin"
 )
 
-var binancePairs utils.TickerList
-var hitbtcPairs utils.TickerList
+var binancePairs map[string][]utils.Ticker
+var hitbtcPairs map[string][]utils.Ticker
 
 var funcMap = template.FuncMap{
 	"FormatFloat": func(f float64) string { return fmt.Sprintf("%.2f", f) },
@@ -25,19 +27,14 @@ var funcMap = template.FuncMap{
 		result := "showChart(" + arr + ")"
 		return template.JS(result)
 	},
+	"htmlSafe": func(html string) template.HTML {
+		return template.HTML(html)
+	},
 }
 
-var handler = func(w http.ResponseWriter, r *http.Request) {
-	data := PageData{
-		HitBtcTickers:  hitbtcPairs,
-		BinanceTickers: binancePairs,
-	}
-	pageTemplate.ExecuteTemplate(w, "index.html", data)
-}
+//var pageTemplate = template.Must(template.New("main").Funcs(funcMap).ParseGlob("static/*.html"))
 
-var pageTemplate = template.Must(template.New("main").Funcs(funcMap).ParseGlob("static/*.html"))
-
-func Start(binanceChannel chan utils.TickerList, hitbtcChannel chan utils.TickerList) {
+func Start(binanceChannel chan map[string][]utils.Ticker, hitbtcChannel chan map[string][]utils.Ticker) {
 
 	port := os.Getenv("PORT")
 
@@ -46,19 +43,29 @@ func Start(binanceChannel chan utils.TickerList, hitbtcChannel chan utils.Ticker
 		port = "8000"
 	}
 
-	http.HandleFunc("/", handler)
-	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
+	router := gin.Default()
+	router.SetFuncMap(funcMap)
+	router.Static("/static", "./static")
+	router.LoadHTMLGlob("static/*.html")
+	router.GET("/", func(c *gin.Context) {
+		c.Redirect(http.StatusMovedPermanently, "/binance")
+	}).GET("/binance", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "index.html", gin.H{
+			"data": binancePairs,
+		})
+	}).GET("/hitbtc", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "index.html", gin.H{
+			"data": hitbtcPairs,
+		})
+	})
 
-	go http.ListenAndServe(":"+port, nil)
+	go router.Run(":8000")
 	log.Println("Started the web server on port ", port)
 
 	for {
 		hitbtcPairs = <-hitbtcChannel
 		binancePairs = <-binanceChannel
-	}
-}
 
-type PageData struct {
-	HitBtcTickers  utils.TickerList
-	BinanceTickers utils.TickerList
+		fmt.Println(hitbtcPairs["DAI"])
+	}
 }

@@ -9,13 +9,12 @@ import (
 	talib "github.com/markcheno/go-talib"
 )
 
-func Loop(period time.Duration, results chan<- utils.TickerList) {
+func Loop(period time.Duration, results chan<- map[string][]utils.Ticker) {
 	symbolsMap := GetSymbols()
 
 	for {
 		tickers := Get24HTickers()
-		var tickerMap map[string]utils.Ticker
-		tickerMap = make(map[string]utils.Ticker)
+		marketMap := map[string][]utils.Ticker{}
 
 		for _, binanceTicker := range tickers {
 			if symbolsMap[binanceTicker.Symbol].Status != "TRADING" {
@@ -39,11 +38,12 @@ func Loop(period time.Duration, results chan<- utils.TickerList) {
 			if len(klines) >= 25 {
 				ticker.PriceChange24H = utils.PercentageDiff(binanceTicker.LastPrice, klines[len(klines)-25].Close)
 			}
-			tickerMap[ticker.Symbol] = ticker
+
+			marketMap[ticker.QuoteCurrency] = append(marketMap[ticker.QuoteCurrency], ticker)
 		}
 
 		log.Println("Binance result are fetched")
-		results <- (utils.SortTickerMapByRSIValues(tickerMap))
+		results <- marketMap
 
 		time.Sleep(period * time.Second)
 	}

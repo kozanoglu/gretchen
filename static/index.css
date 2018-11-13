@@ -1,8 +1,26 @@
+#exchangeButtons {
+    margin-bottom: 30px;
+}
+
+#exchangeButtons input {
+  /* width: 50px;
+   height: 30px;*/
+}
+
+/* Sortable tables */
+table.sortable thead {
+    background-color:#eee;
+    color:#666666;
+    font-weight: bold;
+    cursor: default;
+}
+
 /* Style the tab */
 .tab {
     overflow: hidden;
     border: 1px solid #ccc;
     background-color: #f1f1f1;
+    margin-bottom: 20px;
 }
 
 /* Style the buttons that are used to open the tab content */

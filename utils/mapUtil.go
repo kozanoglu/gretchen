@@ -43,6 +43,13 @@ type Ticker struct {
 	PriceChange24H float64
 }
 
+
+
+type MarketData struct {
+	Tickers TickerList
+	Market  string
+}
+
 type TickerList []Ticker
 
 func (p TickerList) Len() int           { return len(p) }

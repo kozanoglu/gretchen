@@ -17,8 +17,8 @@ func main() {
 	log.Println("Main loop thread started...")
 	//go idex.Loop(5)
 
-	binanceResults := make(chan utils.TickerList)
-	hitbtcResults := make(chan utils.TickerList)
+	binanceResults := make(chan map[string][]utils.Ticker)
+	hitbtcResults := make(chan map[string][]utils.Ticker)
 
 	go binance.Loop(60, binanceResults)
 	go hitbtc.Loop(60, hitbtcResults)
