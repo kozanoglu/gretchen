@@ -59,7 +59,7 @@ func Start(binanceChannel chan map[string][]utils.Ticker, hitbtcChannel chan map
 		})
 	})
 
-	go router.Run(":8000")
+	go router.Run(":", port)
 	log.Println("Started the web server on port ", port)
 
 	for {
