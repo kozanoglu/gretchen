@@ -65,7 +65,5 @@ func Start(binanceChannel chan map[string][]utils.Ticker, hitbtcChannel chan map
 	for {
 		hitbtcPairs = <-hitbtcChannel
 		binancePairs = <-binanceChannel
-
-		fmt.Println(hitbtcPairs["DAI"])
 	}
 }
