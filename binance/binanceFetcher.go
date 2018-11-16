@@ -22,6 +22,11 @@ func Loop(period time.Duration, results chan<- map[string][]utils.Ticker) {
 			}
 
 			klines := getCandlesForSymbol(binanceTicker.Symbol)
+			
+			if len(klines) <= 14 {
+				continue
+			}
+			
 			rsiArray := talib.Rsi(getCloseValues(klines), 14)
 
 			var ticker utils.Ticker
