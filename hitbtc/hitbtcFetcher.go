@@ -19,15 +19,8 @@ func Loop(period time.Duration, results chan<- map[string][]utils.Ticker) {
 		for _, hitbtcTicker := range hitbtcTickers {
 			klines := getCandlesForSymbol(hitbtcTicker.Symbol)
 
-			if len(klines) <= 14 {
-				continue
-			}
-
-			rsiArray := talib.Rsi(getCloseValues(klines), 14)
-
 			var ticker utils.Ticker
 			ticker.Symbol = hitbtcTicker.Symbol
-			ticker.Rsi = rsiArray[(len(rsiArray) - utils.Min(len(rsiArray), 7)):] // last N elements
 			ticker.Price = hitbtcTicker.Last
 			ticker.Volume = hitbtcTicker.Volume
 			ticker.QuoteVolume = hitbtcTicker.VolumeQuote
@@ -44,6 +37,11 @@ func Loop(period time.Duration, results chan<- map[string][]utils.Ticker) {
 			}
 			if len(klines) >= 25 {
 				ticker.PriceChange24H = utils.PercentageDiff(lastPrice, klines[len(klines)-25].Close)
+			}
+
+			if len(klines) > 14 {
+				rsiArray := talib.Rsi(getCloseValues(klines), 14)
+				ticker.Rsi = rsiArray[(len(rsiArray) - utils.Min(len(rsiArray), 7)):] // last N elements
 			}
 
 			marketMap[ticker.QuoteCurrency] = append(marketMap[ticker.QuoteCurrency], ticker)

@@ -3,6 +3,8 @@ package binance
 import (
 	"encoding/json"
 	"gretchen/utils"
+
+	"github.com/golang/glog"
 )
 
 const BinanceEndpoint = "https://api.binance.com"
@@ -17,19 +19,33 @@ func GetSymbols() map[string]BinanceSymbol {
 
 func GetExchangeInfo() ExchangeInfo {
 	url := BinanceEndpoint + ExchangeInfoAPI
-	body := utils.Get(url)
+	body, err := utils.Get(url)
+
+	if err != nil {
+		glog.Error(err)
+	}
 	return parseExchangeInfo(body)
 }
 
 func Get24HTickers() []BinanceTicker {
 	url := BinanceEndpoint + DailyTickerAPI
-	body := utils.Get(url)
+	body, err := utils.Get(url)
+
+	if err != nil {
+		glog.Error(err)
+		return nil
+	}
 	return parseTickerInfo(body)
 }
 
 func GetCandles(symbol string) []*BinanceCandle {
 	url := BinanceEndpoint + KlinesAPI + "?symbol=" + symbol + "&interval=1h&limit=336"
-	body := utils.Get(url)
+	body, err := utils.Get(url)
+
+	if err != nil {
+		glog.Error(err)
+		return nil
+	}
 
 	//fmt.Println(string(body))
 	return parseKlinesInfo(body)
@@ -40,7 +56,7 @@ func parseExchangeInfo(input []byte) ExchangeInfo {
 	err := json.Unmarshal(input, &result)
 
 	if err != nil {
-		panic(err)
+		glog.Error(err)
 	}
 	return result
 }
@@ -58,7 +74,8 @@ func parseTickerInfo(input []byte) []BinanceTicker {
 	err := json.Unmarshal(input, &result)
 
 	if err != nil {
-		panic(err)
+		glog.Error(err)
+		return nil
 	}
 	return result
 }
@@ -68,7 +85,8 @@ func parseKlinesInfo(input []byte) []*BinanceCandle {
 	err := json.Unmarshal(input, &parsedBody)
 
 	if err != nil {
-		panic(err)
+		glog.Error(err)
+		return nil
 	}
 
 	var result = make([]*BinanceCandle, len(parsedBody))

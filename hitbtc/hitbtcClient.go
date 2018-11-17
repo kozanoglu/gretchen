@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"gretchen/utils"
 	"time"
+
+	"github.com/golang/glog"
 )
 
 const HitBTCEndpoint = "https://api.hitbtc.com"
@@ -13,19 +15,32 @@ const KlinesAPI = "/api/2/public/candles/"
 
 func GetSymbols() map[string]HitBTCSymbol {
 	url := HitBTCEndpoint + SymbolsAPI
-	body := utils.Get(url)
+	body, err := utils.Get(url)
+	if err != nil {
+		glog.Error(err)
+		return nil
+	}
 	return parseSymbolInfo(body)
 }
 
 func Get24HTickers() []HitBTCTicker {
 	url := HitBTCEndpoint + DailyTickerAPI
-	body := utils.Get(url)
+	body, err := utils.Get(url)
+	if err != nil {
+		glog.Error(err)
+		return nil
+	}
+
 	return parseTickerInfo(body)
 }
 
 func GetCandles(symbol string) []HitBTCCandle {
 	url := HitBTCEndpoint + KlinesAPI + symbol + "?period=H1&limit=336"
-	body := utils.Get(url)
+	body, err := utils.Get(url)
+	if err != nil {
+		glog.Error(err)
+		return nil
+	}
 
 	//fmt.Println(string(body))
 	return parseKlinesInfo(body)
@@ -36,7 +51,8 @@ func parseSymbolInfo(input []byte) map[string]HitBTCSymbol {
 	err := json.Unmarshal(input, &result)
 
 	if err != nil {
-		panic(err)
+		glog.Error(err)
+		return nil
 	}
 
 	resultAsMap := make(map[string]HitBTCSymbol)
@@ -52,7 +68,7 @@ func parseTickerInfo(input []byte) []HitBTCTicker {
 	err := json.Unmarshal(input, &result)
 
 	if err != nil {
-		panic(err)
+		glog.Error(err)
 	}
 	return result
 }
@@ -63,7 +79,8 @@ func parseKlinesInfo(input []byte) []HitBTCCandle {
 	err := json.Unmarshal(input, &result)
 
 	if err != nil {
-		panic(err)
+		glog.Error(err)
+		return nil
 	}
 
 	return result
