@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/thinkerou/favicon"
 )
 
 var binancePairs map[string][]utils.Ticker
@@ -36,6 +37,15 @@ var funcMap = template.FuncMap{
 	"htmlSafe": func(html string) template.HTML {
 		return template.HTML(html)
 	},
+	"GetPriceColor": func(priceChange float64) template.CSS {
+		color := ""
+		if priceChange < 0 {
+			color = "red"
+		} else if priceChange > 0 {
+			color = "green"
+		}
+		return template.CSS(color)
+	},
 }
 
 //var pageTemplate = template.Must(template.New("main").Funcs(funcMap).ParseGlob("static/*.html"))
@@ -51,6 +61,7 @@ func Start(binanceChannel chan map[string][]utils.Ticker, hitbtcChannel chan map
 	}
 
 	router := gin.Default()
+	router.Use(favicon.New("static/img/favicon.ico"))
 	router.SetFuncMap(funcMap)
 	router.Static("/static", "./static")
 	router.LoadHTMLGlob("static/*.html")
