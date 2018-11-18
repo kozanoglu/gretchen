@@ -4,6 +4,7 @@ import (
 	"gretchen/utils"
 	"log"
 	"strconv"
+	"strings"
 	"time"
 
 	talib "github.com/markcheno/go-talib"
@@ -23,12 +24,14 @@ func Loop(period time.Duration, results chan<- map[string][]utils.Ticker) {
 
 			klines := getCandlesForSymbol(binanceTicker.Symbol)
 
+			quoteAsset := symbolsMap[binanceTicker.Symbol].QuoteAsset
+
 			var ticker utils.Ticker
-			ticker.Symbol = binanceTicker.Symbol
+			ticker.Symbol = strings.Replace(binanceTicker.Symbol, quoteAsset, "_"+quoteAsset, 1)
 			ticker.Price = strconv.FormatFloat(binanceTicker.LastPrice, 'f', -1, 64)
 			ticker.Volume = strconv.FormatFloat(binanceTicker.Volume, 'f', -1, 64)
 			ticker.QuoteVolume = strconv.FormatFloat(binanceTicker.QuoteVolume, 'f', -1, 64)
-			ticker.QuoteCurrency = symbolsMap[binanceTicker.Symbol].QuoteAsset
+			ticker.QuoteCurrency = quoteAsset
 			ticker.PriceChange1H = utils.PercentageDiff(binanceTicker.LastPrice, klines[len(klines)-2].Close)
 			if len(klines) >= 5 {
 				ticker.PriceChange4H = utils.PercentageDiff(binanceTicker.LastPrice, klines[len(klines)-5].Close)

@@ -42,6 +42,7 @@
                         <td>1H PC</td>
                         <td>4H PC</td>
                         <td>24H PC</td>
+                        <td>Link</td>
                     </tr>
                 </thead>
                 <tbody>
@@ -55,6 +56,7 @@
                         <td class="{{ GetPriceColor .PriceChange1H}}">{{.PriceChange1H}}%</td>
                         <td class="{{ GetPriceColor .PriceChange4H}}">{{.PriceChange4H}}%</td>
                         <td class="{{ GetPriceColor .PriceChange24H}}">{{.PriceChange24H}}%</td>
+                        <td><a target="_blank"  href="{{ $.base }}{{ .Symbol }}">>>></a></td>
                     </tr>
                     {{end}}
                 </tbody>

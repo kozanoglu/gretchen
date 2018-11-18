@@ -48,8 +48,6 @@ var funcMap = template.FuncMap{
 	},
 }
 
-//var pageTemplate = template.Must(template.New("main").Funcs(funcMap).ParseGlob("static/*.html"))
-
 func Start(binanceChannel chan map[string][]utils.Ticker, hitbtcChannel chan map[string][]utils.Ticker,
 	kucoinChannel chan map[string][]utils.Ticker) {
 
@@ -70,14 +68,17 @@ func Start(binanceChannel chan map[string][]utils.Ticker, hitbtcChannel chan map
 	}).GET("/binance", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.html", gin.H{
 			"data": binancePairs,
+			"base": "https://www.binance.com/en/trade/",
 		})
 	}).GET("/hitbtc", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.html", gin.H{
 			"data": hitbtcPairs,
+			"base": "https://hitbtc.com/",
 		})
 	}).GET("/kucoin", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.html", gin.H{
 			"data": kucoinPairs,
+			"base": "https://www.kucoin.com/#/trade.pro/",
 		})
 	})
 
