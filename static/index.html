@@ -39,6 +39,7 @@
                         <td>Volume</td>
                         <td>Quote Volume</td>
                         <td>1H RSI</td>
+                        <td>1D RSI</td>
                         <td>1H PC</td>
                         <td>4H PC</td>
                         <td>24H PC</td>
@@ -53,6 +54,7 @@
                         <td>{{.Volume}}</td>
                         <td>{{.QuoteVolume}}</td>
                         <td class="clickable" onclick="{{ ToJsArrayFunction .Rsi}}">{{ LastElem .Rsi}}</td>
+                        <td class="clickable" onclick="{{ ToJsArrayFunction .Rsi}}">{{ LastElem .Rsi1D}}</td>
                         <td class="{{ GetPriceColor .PriceChange1H}}">{{.PriceChange1H}}%</td>
                         <td class="{{ GetPriceColor .PriceChange4H}}">{{.PriceChange4H}}%</td>
                         <td class="{{ GetPriceColor .PriceChange24H}}">{{.PriceChange24H}}%</td>

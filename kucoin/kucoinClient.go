@@ -34,13 +34,28 @@ func Get24HTickers() map[string]KucoinTicker {
 	return parseSymbolInfo(body)
 }
 
-func GetCandles(symbol string) []*KucoinCandle {
+func GetHourlyCandles(symbol string) []*KucoinCandle {
 	//?symbol=KCS-BTC&symbol=KCS-BTC&type=1HOUR&limit=10&from=1540145736&to=1542145736
 	to := time.Now().Unix() * 1000
 	toMs := strconv.FormatInt(to, 10)
 	from := to - 340*3600000
 	fromMs := strconv.FormatInt(from, 10)
 	url := KucoinEndpoint + KlinesAPI + "?period=1HOUR&limit=336&symbol=" + symbol + "&from=" + fromMs + "&to=" + toMs
+	body, err := utils.Get(url)
+	if err != nil {
+		glog.Error(err)
+		return nil
+	}
+	return parseKlinesInfo(body)
+}
+
+func GetDailyCandles(symbol string) []*KucoinCandle {
+	//?symbol=KCS-BTC&symbol=KCS-BTC&type=1DAY&limit=10&from=1540145736&to=1542145736
+	to := time.Now().Unix() * 1000
+	toMs := strconv.FormatInt(to, 10)
+	from := to - 340*3600000*24
+	fromMs := strconv.FormatInt(from, 10)
+	url := KucoinEndpoint + KlinesAPI + "?period=1DAY&limit=336&symbol=" + symbol + "&from=" + fromMs + "&to=" + toMs
 	body, err := utils.Get(url)
 	if err != nil {
 		glog.Error(err)

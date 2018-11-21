@@ -18,7 +18,8 @@ func Loop(period time.Duration, results chan<- map[string][]utils.Ticker) {
 		marketMap := map[string][]utils.Ticker{}
 
 		for _, kucoinTicker := range kucoinTickers {
-			klines := getCandlesForSymbol(kucoinTicker.Symbol)
+			hourlyKlines := GetHourlyCandles(kucoinTicker.Symbol)
+			dailyKlines := GetDailyCandles(kucoinTicker.Symbol)
 
 			var ticker utils.Ticker
 			ticker.Symbol = kucoinTicker.Symbol
@@ -27,19 +28,24 @@ func Loop(period time.Duration, results chan<- map[string][]utils.Ticker) {
 			ticker.QuoteVolume = strconv.FormatFloat(kucoinTicker.VolValue, 'f', -1, 64)
 			ticker.QuoteCurrency = kucoinTicker.CoinTypePair
 
-			if len(klines) >= 2 {
-				ticker.PriceChange1H = utils.PercentageDiff(kucoinTicker.LastDealPrice, klines[len(klines)-2].Close)
+			if len(hourlyKlines) >= 2 {
+				ticker.PriceChange1H = utils.PercentageDiff(kucoinTicker.LastDealPrice, hourlyKlines[len(hourlyKlines)-2].Close)
 			}
-			if len(klines) >= 5 {
-				ticker.PriceChange4H = utils.PercentageDiff(kucoinTicker.LastDealPrice, klines[len(klines)-5].Close)
+			if len(hourlyKlines) >= 5 {
+				ticker.PriceChange4H = utils.PercentageDiff(kucoinTicker.LastDealPrice, hourlyKlines[len(hourlyKlines)-5].Close)
 			}
-			if len(klines) >= 25 {
+			if len(hourlyKlines) >= 25 {
 				ticker.PriceChange24H = kucoinTicker.ChangeRate
 			}
 
-			if len(klines) > 14 {
-				rsiArray := talib.Rsi(getCloseValues(klines), 14)
+			if len(hourlyKlines) > 14 {
+				rsiArray := talib.Rsi(getCloseValues(hourlyKlines), 14)
 				ticker.Rsi = rsiArray[(len(rsiArray) - utils.Min(len(rsiArray), 7)):] // last N elements
+			}
+
+			if len(dailyKlines) > 14 {
+				rsiArray := talib.Rsi(getCloseValues(dailyKlines), 14)
+				ticker.Rsi1D = rsiArray[(len(rsiArray) - utils.Min(len(rsiArray), 7)):] // last N elements
 			}
 
 			marketMap[ticker.QuoteCurrency] = append(marketMap[ticker.QuoteCurrency], ticker)
@@ -50,11 +56,6 @@ func Loop(period time.Duration, results chan<- map[string][]utils.Ticker) {
 
 		time.Sleep(period * time.Second)
 	}
-}
-
-func getCandlesForSymbol(symbol string) []*KucoinCandle {
-	klines := GetCandles(symbol)
-	return klines
 }
 
 func getCloseValues(klines []*KucoinCandle) []float64 {

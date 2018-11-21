@@ -24,9 +24,9 @@ func main() {
 	hitbtcResults := make(chan map[string][]utils.Ticker, channelTimeout)
 	kucoinResults := make(chan map[string][]utils.Ticker, channelTimeout)
 
-	go binance.Loop(60, binanceResults)
-	go hitbtc.Loop(60, hitbtcResults)
-	go kucoin.Loop(60, kucoinResults)
+	go binance.Loop(300, binanceResults)
+	go hitbtc.Loop(300, hitbtcResults)
+	go kucoin.Loop(300, kucoinResults)
 	go web.Start(binanceResults, hitbtcResults, kucoinResults)
 
 	for {

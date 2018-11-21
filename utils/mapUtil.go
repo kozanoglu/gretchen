@@ -37,13 +37,12 @@ type Ticker struct {
 	Volume         string
 	QuoteVolume    string
 	Rsi            []float64
+	Rsi1D          []float64
 	QuoteCurrency  string
 	PriceChange1H  float64
 	PriceChange4H  float64
 	PriceChange24H float64
 }
-
-
 
 type MarketData struct {
 	Tickers TickerList

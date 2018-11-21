@@ -22,7 +22,8 @@ func Loop(period time.Duration, results chan<- map[string][]utils.Ticker) {
 				continue
 			}
 
-			klines := getCandlesForSymbol(binanceTicker.Symbol)
+			hourlyKlines := GetHourlyCandles(binanceTicker.Symbol)
+			dailyKlines := GetDailyCandles(binanceTicker.Symbol)
 
 			quoteAsset := symbolsMap[binanceTicker.Symbol].QuoteAsset
 
@@ -32,17 +33,22 @@ func Loop(period time.Duration, results chan<- map[string][]utils.Ticker) {
 			ticker.Volume = strconv.FormatFloat(binanceTicker.Volume, 'f', -1, 64)
 			ticker.QuoteVolume = strconv.FormatFloat(binanceTicker.QuoteVolume, 'f', -1, 64)
 			ticker.QuoteCurrency = quoteAsset
-			ticker.PriceChange1H = utils.PercentageDiff(binanceTicker.LastPrice, klines[len(klines)-2].Close)
-			if len(klines) >= 5 {
-				ticker.PriceChange4H = utils.PercentageDiff(binanceTicker.LastPrice, klines[len(klines)-5].Close)
+			ticker.PriceChange1H = utils.PercentageDiff(binanceTicker.LastPrice, hourlyKlines[len(hourlyKlines)-2].Close)
+			if len(hourlyKlines) >= 5 {
+				ticker.PriceChange4H = utils.PercentageDiff(binanceTicker.LastPrice, hourlyKlines[len(hourlyKlines)-5].Close)
 			}
-			if len(klines) >= 25 {
-				ticker.PriceChange24H = utils.PercentageDiff(binanceTicker.LastPrice, klines[len(klines)-25].Close)
+			if len(hourlyKlines) >= 25 {
+				ticker.PriceChange24H = utils.PercentageDiff(binanceTicker.LastPrice, hourlyKlines[len(hourlyKlines)-25].Close)
 			}
 
-			if len(klines) > 14 {
-				rsiArray := talib.Rsi(getCloseValues(klines), 14)
+			if len(hourlyKlines) > 14 {
+				rsiArray := talib.Rsi(getCloseValues(hourlyKlines), 14)
 				ticker.Rsi = rsiArray[(len(rsiArray) - utils.Min(len(rsiArray), 7)):] // last N elements
+			}
+
+			if len(dailyKlines) > 14 {
+				rsiArray := talib.Rsi(getCloseValues(dailyKlines), 14)
+				ticker.Rsi1D = rsiArray[(len(rsiArray) - utils.Min(len(rsiArray), 7)):] // last N elements
 			}
 
 			marketMap[ticker.QuoteCurrency] = append(marketMap[ticker.QuoteCurrency], ticker)
@@ -53,11 +59,6 @@ func Loop(period time.Duration, results chan<- map[string][]utils.Ticker) {
 
 		time.Sleep(period * time.Second)
 	}
-}
-
-func getCandlesForSymbol(symbol string) []*BinanceCandle {
-	klines := GetCandles(symbol)
-	return klines
 }
 
 func getCloseValues(klines []*BinanceCandle) []float64 {

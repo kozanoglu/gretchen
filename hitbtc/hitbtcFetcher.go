@@ -17,7 +17,8 @@ func Loop(period time.Duration, results chan<- map[string][]utils.Ticker) {
 		marketMap := map[string][]utils.Ticker{}
 
 		for _, hitbtcTicker := range hitbtcTickers {
-			klines := getCandlesForSymbol(hitbtcTicker.Symbol)
+			hourlyKlines := GetHourlyCandles(hitbtcTicker.Symbol)
+			dailyKlines := GetDailyCandles(hitbtcTicker.Symbol)
 
 			var ticker utils.Ticker
 			ticker.Symbol = hitbtcTicker.Symbol
@@ -31,17 +32,22 @@ func Loop(period time.Duration, results chan<- map[string][]utils.Ticker) {
 				lastPrice = 0.0
 			}
 
-			ticker.PriceChange1H = utils.PercentageDiff(lastPrice, klines[len(klines)-2].Close)
-			if len(klines) >= 5 {
-				ticker.PriceChange4H = utils.PercentageDiff(lastPrice, klines[len(klines)-5].Close)
+			ticker.PriceChange1H = utils.PercentageDiff(lastPrice, hourlyKlines[len(hourlyKlines)-2].Close)
+			if len(hourlyKlines) >= 5 {
+				ticker.PriceChange4H = utils.PercentageDiff(lastPrice, hourlyKlines[len(hourlyKlines)-5].Close)
 			}
-			if len(klines) >= 25 {
-				ticker.PriceChange24H = utils.PercentageDiff(lastPrice, klines[len(klines)-25].Close)
+			if len(hourlyKlines) >= 25 {
+				ticker.PriceChange24H = utils.PercentageDiff(lastPrice, hourlyKlines[len(hourlyKlines)-25].Close)
 			}
 
-			if len(klines) > 14 {
-				rsiArray := talib.Rsi(getCloseValues(klines), 14)
+			if len(hourlyKlines) > 14 {
+				rsiArray := talib.Rsi(getCloseValues(hourlyKlines), 14)
 				ticker.Rsi = rsiArray[(len(rsiArray) - utils.Min(len(rsiArray), 7)):] // last N elements
+			}
+
+			if len(dailyKlines) > 14 {
+				rsiArray := talib.Rsi(getCloseValues(dailyKlines), 14)
+				ticker.Rsi1D = rsiArray[(len(rsiArray) - utils.Min(len(rsiArray), 7)):] // last N elements
 			}
 
 			marketMap[ticker.QuoteCurrency] = append(marketMap[ticker.QuoteCurrency], ticker)
@@ -52,11 +58,6 @@ func Loop(period time.Duration, results chan<- map[string][]utils.Ticker) {
 
 		time.Sleep(period * time.Second)
 	}
-}
-
-func getCandlesForSymbol(symbol string) []HitBTCCandle {
-	klines := GetCandles(symbol)
-	return klines
 }
 
 func getCloseValues(klines []HitBTCCandle) []float64 {

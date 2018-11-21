@@ -34,8 +34,20 @@ func Get24HTickers() []HitBTCTicker {
 	return parseTickerInfo(body)
 }
 
-func GetCandles(symbol string) []HitBTCCandle {
+func GetHourlyCandles(symbol string) []HitBTCCandle {
 	url := HitBTCEndpoint + KlinesAPI + symbol + "?period=H1&limit=336"
+	body, err := utils.Get(url)
+	if err != nil {
+		glog.Error(err)
+		return nil
+	}
+
+	//fmt.Println(string(body))
+	return parseKlinesInfo(body)
+}
+
+func GetDailyCandles(symbol string) []HitBTCCandle {
+	url := HitBTCEndpoint + KlinesAPI + symbol + "?period=D1&limit=336"
 	body, err := utils.Get(url)
 	if err != nil {
 		glog.Error(err)

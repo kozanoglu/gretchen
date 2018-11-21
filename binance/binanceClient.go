@@ -38,8 +38,21 @@ func Get24HTickers() []BinanceTicker {
 	return parseTickerInfo(body)
 }
 
-func GetCandles(symbol string) []*BinanceCandle {
+func GetHourlyCandles(symbol string) []*BinanceCandle {
 	url := BinanceEndpoint + KlinesAPI + "?symbol=" + symbol + "&interval=1h&limit=336"
+	body, err := utils.Get(url)
+
+	if err != nil {
+		glog.Error(err)
+		return nil
+	}
+
+	//fmt.Println(string(body))
+	return parseKlinesInfo(body)
+}
+
+func GetDailyCandles(symbol string) []*BinanceCandle {
+	url := BinanceEndpoint + KlinesAPI + "?symbol=" + symbol + "&interval=1d&limit=336"
 	body, err := utils.Get(url)
 
 	if err != nil {
