@@ -42,7 +42,7 @@ func Loop(period time.Duration, results chan<- map[string][]utils.Ticker) {
 
 			if len(hourlyKlines) > 14 {
 				rsiArray := talib.Rsi(getCloseValues(hourlyKlines), 14)
-				ticker.Rsi = rsiArray[(len(rsiArray) - utils.Min(len(rsiArray), 7)):] // last N elements
+				ticker.Rsi1H = rsiArray[(len(rsiArray) - utils.Min(len(rsiArray), 7)):] // last N elements
 			}
 
 			if len(dailyKlines) > 14 {

@@ -5,6 +5,7 @@ import (
 	"sort"
 )
 
+// Deprecated
 func SortTickerMapByRSIValues(inputMap map[string]Ticker) TickerList {
 	p := make(TickerList, len(inputMap))
 
@@ -36,7 +37,7 @@ type Ticker struct {
 	Price          string
 	Volume         string
 	QuoteVolume    string
-	Rsi            []float64
+	Rsi1H          []float64
 	Rsi1D          []float64
 	QuoteCurrency  string
 	PriceChange1H  float64
@@ -51,6 +52,8 @@ type MarketData struct {
 
 type TickerList []Ticker
 
-func (p TickerList) Len() int           { return len(p) }
-func (p TickerList) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
-func (p TickerList) Less(i, j int) bool { return p[i].Rsi[len(p[i].Rsi)-1] < p[j].Rsi[len(p[j].Rsi)-1] }
+func (p TickerList) Len() int      { return len(p) }
+func (p TickerList) Swap(i, j int) { p[i], p[j] = p[j], p[i] }
+func (p TickerList) Less(i, j int) bool {
+	return p[i].Rsi1H[len(p[i].Rsi1H)-1] < p[j].Rsi1H[len(p[j].Rsi1H)-1]
+}
