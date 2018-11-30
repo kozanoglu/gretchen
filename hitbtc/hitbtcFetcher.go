@@ -32,7 +32,9 @@ func Loop(period time.Duration, results chan<- map[string][]utils.Ticker) {
 				lastPrice = 0.0
 			}
 
-			ticker.PriceChange1H = utils.PercentageDiff(lastPrice, hourlyKlines[len(hourlyKlines)-2].Close)
+			if  len(hourlyKlines) >= 2 {
+				ticker.PriceChange1H = utils.PercentageDiff(lastPrice, hourlyKlines[len(hourlyKlines)-2].Close)
+			}
 			if len(hourlyKlines) >= 5 {
 				ticker.PriceChange4H = utils.PercentageDiff(lastPrice, hourlyKlines[len(hourlyKlines)-5].Close)
 			}

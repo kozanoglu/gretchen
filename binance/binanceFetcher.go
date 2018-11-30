@@ -33,7 +33,9 @@ func Loop(period time.Duration, results chan<- map[string][]utils.Ticker) {
 			ticker.Volume = strconv.FormatFloat(binanceTicker.Volume, 'f', -1, 64)
 			ticker.QuoteVolume = strconv.FormatFloat(binanceTicker.QuoteVolume, 'f', -1, 64)
 			ticker.QuoteCurrency = quoteAsset
-			ticker.PriceChange1H = utils.PercentageDiff(binanceTicker.LastPrice, hourlyKlines[len(hourlyKlines)-2].Close)
+			if len(hourlyKlines) >= 2 {
+				ticker.PriceChange1H = utils.PercentageDiff(binanceTicker.LastPrice, hourlyKlines[len(hourlyKlines)-2].Close)
+			}
 			if len(hourlyKlines) >= 5 {
 				ticker.PriceChange4H = utils.PercentageDiff(binanceTicker.LastPrice, hourlyKlines[len(hourlyKlines)-5].Close)
 			}

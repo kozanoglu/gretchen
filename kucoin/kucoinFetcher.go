@@ -35,7 +35,7 @@ func Loop(period time.Duration, results chan<- map[string][]utils.Ticker) {
 				ticker.PriceChange4H = utils.PercentageDiff(kucoinTicker.LastDealPrice, hourlyKlines[len(hourlyKlines)-5].Close)
 			}
 			if len(hourlyKlines) >= 25 {
-				ticker.PriceChange24H = kucoinTicker.ChangeRate * 100
+				ticker.PriceChange24H = kucoinTicker.ChangeRate * 100 // todo fix decimals
 			}
 
 			if len(hourlyKlines) > 14 {
