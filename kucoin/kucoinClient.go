@@ -14,6 +14,7 @@ const KucoinEndpoint = "https://api.kucoin.com"
 const MarketsAPI = "/v1/open/markets"
 const TickersAPI = "/v1/market/open/symbols"
 const KlinesAPI = "/v1/open/kline"
+const KlinesAPI2 = "/v1/open/chart/history"
 
 func GetMarkets() KucoinMarketResult {
 	url := KucoinEndpoint + MarketsAPI
@@ -34,13 +35,14 @@ func Get24HTickers() map[string]KucoinTicker {
 	return parseSymbolInfo(body)
 }
 
-func GetHourlyCandles(symbol string) []*KucoinCandle {
-	//?symbol=KCS-BTC&symbol=KCS-BTC&type=1HOUR&limit=10&from=1540145736&to=1542145736
-	to := time.Now().Unix() * 1000
+func GetHourlyCandles(symbol string) *KucoinKlineResult {
+	//?symbol=KCS-BTC&type=1HOUR&limit=10&from=1540145736&to=1542145736
+	to := time.Now().Unix()
 	toMs := strconv.FormatInt(to, 10)
-	from := to - 340*3600000
+	from := to - 340*3600
 	fromMs := strconv.FormatInt(from, 10)
-	url := KucoinEndpoint + KlinesAPI + "?period=1HOUR&limit=336&symbol=" + symbol + "&from=" + fromMs + "&to=" + toMs
+	url := KucoinEndpoint + KlinesAPI2 + "?symbol=" + symbol + "&resolution=60&from=" + fromMs + "&to=" + toMs
+
 	body, err := utils.Get(url)
 	if err != nil {
 		glog.Error(err)
@@ -49,13 +51,13 @@ func GetHourlyCandles(symbol string) []*KucoinCandle {
 	return parseKlinesInfo(body)
 }
 
-func GetDailyCandles(symbol string) []*KucoinCandle {
-	//?symbol=KCS-BTC&symbol=KCS-BTC&type=1DAY&limit=10&from=1540145736&to=1542145736
-	to := time.Now().Unix() * 1000
+func GetDailyCandles(symbol string) *KucoinKlineResult {
+	//?symbol=KCS-BTC&type=1DAY&limit=10&from=1540145736&to=1542145736
+	to := time.Now().Unix()
 	toMs := strconv.FormatInt(to, 10)
-	from := to - 340*3600000*24
+	from := to - 340*3600*24
 	fromMs := strconv.FormatInt(from, 10)
-	url := KucoinEndpoint + KlinesAPI + "?period=1DAY&limit=336&symbol=" + symbol + "&from=" + fromMs + "&to=" + toMs
+	url := KucoinEndpoint + KlinesAPI2 + "?symbol=" + symbol + "&resolution=D&from=" + fromMs + "&to=" + toMs
 	body, err := utils.Get(url)
 	if err != nil {
 		glog.Error(err)
@@ -91,7 +93,7 @@ func parseSymbolInfo(input []byte) map[string]KucoinTicker {
 	return resultAsMap
 }
 
-func parseKlinesInfo(input []byte) []*KucoinCandle {
+func parseKlinesInfo(input []byte) *KucoinKlineResult {
 	var parsedBody KucoinKlineResult
 	err := json.Unmarshal(input, &parsedBody)
 
@@ -99,11 +101,7 @@ func parseKlinesInfo(input []byte) []*KucoinCandle {
 		log.Panic("Failed to parse result: ", string(input), err)
 	}
 
-	var result = make([]*KucoinCandle, len(parsedBody.Data))
-	for i, klineArray := range parsedBody.Data {
-		result[i] = NewCandle(klineArray)
-	}
-	return result
+	return &parsedBody
 }
 
 type KucoinMarketResult struct {
@@ -141,32 +139,14 @@ type KucoinTicker struct {
 	ChangeRate    float64 `json:"changeRate"`
 }
 
-func NewCandle(input []float64) *KucoinCandle {
-	k := new(KucoinCandle)
-	k.Timestamp = int64(input[0])
-	k.Open = input[1]
-	k.High = input[2]
-	k.Low = input[3]
-	k.Close = input[4]
-	k.Amount = input[5]
-	k.Volume = input[6]
-	return k
-}
-
 type KucoinKlineResult struct {
-	Success   bool        `json:"success"`
-	Code      string      `json:"code"`
-	Msg       string      `json:"msg"`
-	Timestamp int64       `json:"timestamp"`
-	Data      [][]float64 `json:"data"`
-}
-
-type KucoinCandle struct {
-	Timestamp int64
-	Open      float64
-	High      float64
-	Low       float64
-	Close     float64
-	Amount    float64
-	Volume    float64
+	Success   bool      `json:"success"`
+	Code      string    `json:"code"`
+	Status    string    `json:"s"`
+	Close     []float64 `json:"c"`
+	Timestamp []int     `json:"t"`
+	Volume    []float64 `json:"v"`
+	High      []float64 `json:"h"`
+	Low       []float64 `json:"l"`
+	Open      []float64 `json:"o"`
 }

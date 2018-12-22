@@ -3,6 +3,7 @@ package kucoin
 import (
 	"gretchen/utils"
 	"log"
+	"math"
 	"strconv"
 	"time"
 
@@ -18,6 +19,7 @@ func Loop(period time.Duration, results chan<- map[string][]utils.Ticker) {
 		marketMap := map[string][]utils.Ticker{}
 
 		for _, kucoinTicker := range kucoinTickers {
+
 			hourlyKlines := GetHourlyCandles(kucoinTicker.Symbol)
 			dailyKlines := GetDailyCandles(kucoinTicker.Symbol)
 
@@ -28,23 +30,22 @@ func Loop(period time.Duration, results chan<- map[string][]utils.Ticker) {
 			ticker.QuoteVolume = strconv.FormatFloat(kucoinTicker.VolValue, 'f', -1, 64)
 			ticker.QuoteCurrency = kucoinTicker.CoinTypePair
 
-			if len(hourlyKlines) >= 2 {
-				ticker.PriceChange1H = utils.PercentageDiff(kucoinTicker.LastDealPrice, hourlyKlines[len(hourlyKlines)-2].Close)
+			if len(hourlyKlines.Close) >= 2 {
+				ticker.PriceChange1H = utils.PercentageDiff(hourlyKlines.Close[len(hourlyKlines.Close)-1], hourlyKlines.Open[len(hourlyKlines.Open)-1])
 			}
-			if len(hourlyKlines) >= 5 {
-				ticker.PriceChange4H = utils.PercentageDiff(kucoinTicker.LastDealPrice, hourlyKlines[len(hourlyKlines)-5].Close)
-			}
-			if len(hourlyKlines) >= 25 {
-				ticker.PriceChange24H = kucoinTicker.ChangeRate * 100 // todo fix decimals
+			if len(hourlyKlines.Close) >= 5 {
+				ticker.PriceChange4H = utils.PercentageDiff(hourlyKlines.Open[len(hourlyKlines.Open)-5], hourlyKlines.Close[len(hourlyKlines.Close)-5])
 			}
 
-			if len(hourlyKlines) > 14 {
-				rsiArray := talib.Rsi(getCloseValues(hourlyKlines), 14)
+			ticker.PriceChange24H = math.Round(kucoinTicker.ChangeRate*100*100) / 100
+
+			if len(hourlyKlines.Close) > 14 {
+				rsiArray := talib.Rsi(hourlyKlines.Close, 14)
 				ticker.Rsi1H = rsiArray[(len(rsiArray) - utils.Min(len(rsiArray), 7)):] // last N elements
 			}
 
-			if len(dailyKlines) > 14 {
-				rsiArray := talib.Rsi(getCloseValues(dailyKlines), 14)
+			if len(dailyKlines.Close) > 14 {
+				rsiArray := talib.Rsi(dailyKlines.Close, 14)
 				ticker.Rsi1D = rsiArray[(len(rsiArray) - utils.Min(len(rsiArray), 7)):] // last N elements
 			}
 
@@ -56,12 +57,4 @@ func Loop(period time.Duration, results chan<- map[string][]utils.Ticker) {
 
 		time.Sleep(period * time.Second)
 	}
-}
-
-func getCloseValues(klines []*KucoinCandle) []float64 {
-	var result = make([]float64, len(klines))
-	for i, kline := range klines {
-		result[i] = kline.Close
-	}
-	return result
 }
