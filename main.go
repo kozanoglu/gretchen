@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"gretchen/binance"
 	"gretchen/hitbtc"
-	"gretchen/kucoin"
 	"gretchen/utils"
 	"gretchen/web"
 	"log"
@@ -26,7 +25,7 @@ func main() {
 
 	go binance.Loop(300, binanceResults)
 	go hitbtc.Loop(300, hitbtcResults)
-	go kucoin.Loop(300, kucoinResults)
+	//go kucoin.Loop(300, kucoinResults)
 	go web.Start(binanceResults, hitbtcResults, kucoinResults)
 
 	for {
